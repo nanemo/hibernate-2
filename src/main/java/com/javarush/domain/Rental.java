@@ -90,4 +90,17 @@ public class Rental {
     public void setLastUp(LocalDateTime lastUp) {
         this.lastUp = lastUp;
     }
+
+    @Override
+    public String toString() {
+        return "Rental{" +
+                "id=" + id +
+                ", rentalDate=" + rentalDate +
+                ", inventory=" + inventory +
+                ", customer=" + customer +
+                ", returnDate=" + returnDate +
+                ", staff=" + staff +
+                ", lastUp=" + lastUp +
+                '}';
+    }
 }

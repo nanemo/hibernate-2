@@ -93,4 +93,17 @@ public class Payment {
     public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id=" + id +
+                ", customer=" + customer +
+                ", staff=" + staff +
+                ", rental=" + rental +
+                ", amount=" + amount +
+                ", paymentDate=" + paymentDate +
+                ", lastUpdate=" + lastUpdate +
+                '}';
+    }
 }

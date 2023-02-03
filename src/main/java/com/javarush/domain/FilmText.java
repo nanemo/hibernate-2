@@ -13,7 +13,6 @@ public class FilmText {
     @Column(name = "film_id")
     private Short id;
 
-    //TODO @Id
     @OneToOne
     @JoinColumn(name = "film_id")
     private Film film;

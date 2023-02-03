@@ -7,10 +7,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 /**
- * This entity is ready */
+ * This entity is ready
+ */
 
 @Entity
 @Table(name = "film", schema = "movie")
@@ -28,6 +33,7 @@ public class Film {
     private String description;
 
     @Column(name = "release_year", columnDefinition = "year")
+    @Convert(converter = YearAttributeConverter.class)
     private Year releaseYear;
 
     @ManyToOne
@@ -50,8 +56,8 @@ public class Film {
     @Column(name = "replacement_cost")
     private BigDecimal replacementCost;
 
-    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('G', 'PG', 'PG-13', 'R', 'NC-17')")
+    @Convert(converter = RatingConvertor.class)
     private Rating rating;
 
     @Column(name = "special_features", columnDefinition = "set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')")
@@ -62,15 +68,11 @@ public class Film {
     private LocalDateTime lastUpdate;
 
     @ManyToMany
-    @JoinTable(name = "film_actor",
-            joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
-            inverseJoinColumns = @JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
+    @JoinTable(name = "film_actor", joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"), inverseJoinColumns = @JoinColumn(name = "actor_id", referencedColumnName = "actor_id"))
     private Set<Actor> actors;
 
     @ManyToMany
-    @JoinTable(name = "film_category",
-            joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "category_id"))
+    @JoinTable(name = "film_category", joinColumns = @JoinColumn(name = "film_id", referencedColumnName = "film_id"), inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "category_id"))
     private Set<Category> categories;
 
     public Short getId() {
@@ -161,12 +163,28 @@ public class Film {
         this.rating = rating;
     }
 
-    public String getSpecialFeatures() {
-        return specialFeatures;
+    /**
+     * bu methodu tezeden oxu ve maraqlan nece isleyir. tekrarla*/
+    public Set<Feature> getSpecialFeatures() {
+        if (isNull(specialFeatures)) {
+            return null;
+        }
+
+        Set<Feature> result = new HashSet<>();
+        String[] features = specialFeatures.split(",");
+        for (String feature : features) {
+            result.add(Feature.getFeatureByValue(feature));
+        }
+        result.remove(null);
+        return result;
     }
 
-    public void setSpecialFeatures(String specialFeatures) {
-        this.specialFeatures = specialFeatures;
+    public void setSpecialFeatures(Set<Feature> features) {
+        if (isNull(specialFeatures)) {
+            specialFeatures = null;
+        } else {
+            specialFeatures = features.stream().map(Feature::getValue).collect(Collectors.joining(","));
+        }
     }
 
     public LocalDateTime getLastUpdate() {
